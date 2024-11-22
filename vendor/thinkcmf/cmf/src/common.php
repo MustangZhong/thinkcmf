@@ -2009,10 +2009,14 @@ function cmf_is_installed()
  */
 function cmf_replace_content_file_url($content, $isForDbSave = false)
 {
+    if (empty($content)) {
+        return '';
+    }
+
     \phpQuery::newDocumentHTML($content);
     $pq = pq(null);
 
-    $storage       = Storage::instance();
+    $storage       = cmf\lib\Storage::instance();
     $localStorage  = new cmf\lib\storage\Local([]);
     $storageDomain = $storage->getDomain();
     $domain        = request()->host();
@@ -2022,6 +2026,9 @@ function cmf_replace_content_file_url($content, $isForDbSave = false)
         foreach ($images as $img) {
             $img    = pq($img);
             $imgSrc = $img->attr("src");
+            if (empty($imgSrc)) {
+                continue;
+            }
 
             if ($isForDbSave) {
                 if (preg_match("/^\/upload\//", $imgSrc)) {
@@ -2044,6 +2051,10 @@ function cmf_replace_content_file_url($content, $isForDbSave = false)
         foreach ($links as $link) {
             $link = pq($link);
             $href = $link->attr("href");
+
+            if (empty($href)) {
+                continue;
+            }
 
             if ($isForDbSave) {
                 if (preg_match("/^\/upload\//", $href)) {
